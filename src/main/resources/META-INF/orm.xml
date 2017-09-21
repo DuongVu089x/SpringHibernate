@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm  http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
+	version="2.0">
+	<named-query name="Student.getStudentByPageAndKeyword">
+		<query>
+           FROM Student s WHERE s.isActive = 1 
+           AND s.id 
+           	IN (SELECT s.id FROM Student s 
+           		LEFT JOIN s.classes c 
+           		WHERE s.name LIKE :keyword OR s.address LIKE :keyword OR c.name LIKE :keyword)
+           ORDER BY s.id DESC
+        </query>
+	</named-query>
+	<named-query name="Student.deleteStudent">
+		<query>
+          Update Student s SET s.updateName = :currentName, s.isActive = 0 
+          WHERE s.id = :id
+        </query>
+	</named-query>
+	<named-query name="Clazz.getClassByPageAndKeyword">
+		<query>
+          FROM Clazz c WHERE c.isActive = 1 
+           AND c.id 
+           	IN (SELECT c.id FROM Clazz c 
+           		WHERE c.name LIKE :keyword)
+           ORDER BY c.id DESC
+        </query>
+	</named-query>
+	<named-query name="Clazz.deleteClass">
+		<query>
+          Update Clazz s SET s.updateName = :currentName, s.isActive = 0 
+          WHERE s.id = :id
+        </query>
+	</named-query>
+</entity-mappings>
