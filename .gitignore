@@ -22,10 +22,9 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-/mvnw.cmd
-/.mvn
-/.settings
+.settings
 /target
 /.classpath
 /.project
 /mvnw
+/.mvn
