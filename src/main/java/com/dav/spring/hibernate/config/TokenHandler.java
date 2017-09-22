@@ -26,8 +26,8 @@ public class TokenHandler {
 	 * @return the string
 	 */
 	public String parseUserFromToken(String token) {
-		String username = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
-		return username;
+		String role = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
+		return role;
 	}
 
 	/**

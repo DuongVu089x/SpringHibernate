@@ -23,6 +23,12 @@ function checkValidClass(clazz) {
 	return flag;
 }
 
+function searchClass() {
+	var keyword = $("#search").val();
+	keyword = validInputSearch(keyword);
+	window.location.href = "/class/?page=1&keyword=" + keyword;
+}
+
 // Bind error to view
 function clearErrorMessage() {
 	$("div.error").each(function(index) {

@@ -220,11 +220,16 @@ input#dateOfBirth {
 	margin: 20px;
 }
 
+.student-content .container, .class-content .container {
+	min-height: 500px;
+}
+
 .search-result.col-md-5.col-md-push-6 {
-    border: 1px solid #5bc0de;
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-    position: absolute;
-    z-index: 1000;
-    background: white;
-    display: none;
+	border: 1px solid #5bc0de;
+	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px
+		rgba(0, 0, 0, 0.22);
+	position: absolute;
+	z-index: 1000;
+	background: white;
+	display: none;
 }

@@ -14,7 +14,7 @@
 			<div class="input-group col-md-6 col-md-push-6">
 				<input type="text" id="search" class="form-control"	placeholder="Name" value="${keyword}"
 					onkeyup="searchClassAjax()" /> <span class="input-group-btn">
-					<a class="btn btn-info" onclick="searchStudent()"> <i
+					<a class="btn btn-info" onclick="searchClass()"> <i
 						class="glyphicon glyphicon-search"></i>
 				</a>
 				</span>

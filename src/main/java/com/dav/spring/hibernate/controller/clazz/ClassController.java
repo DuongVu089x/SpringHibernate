@@ -61,10 +61,9 @@ public class ClassController {
 	@RequestMapping(value = "/insert")
 	public String insert(@Valid Clazz clazz, BindingResult bindingResult,
 			Principal principal, ModelMap model) throws Exception {
-		//studentValidator.validate(student, bindingResult);
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(Constants.STR_CLAZZ, clazz);
-			model.addAttribute(Constants.STR_USERNAME, Constants.STR_INSERT_SUCCESS);
+			model.addAttribute(Constants.STR_MESSAGE, Constants.STR_INSERT_SUCCESS);
 			return Constants.STR_CLASS;
 		} else {
 			classService.insertClass(clazz, principal.getName());
@@ -85,7 +84,7 @@ public class ClassController {
 	public String edit(ModelMap model, @PathVariable("id") Integer id) throws Exception {
 		Clazz clazz = classService.findById(id);
 		if(clazz != null){
-			model.addAttribute("clazz", classService.findById(id));
+			model.addAttribute(Constants.STR_CLAZZ, classService.findById(id));
 			return Constants.STR_CLASS;
 		}else{
 			return "redirect:/class/";
@@ -108,7 +107,7 @@ public class ClassController {
 			Principal principal, ModelMap model) throws Exception {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(Constants.STR_CLAZZ, clazz);
-			model.addAttribute(Constants.STR_USERNAME, Constants.STR_UPDATE_UNSUCCESS);
+			model.addAttribute(Constants.STR_MESSAGE, Constants.STR_UPDATE_UNSUCCESS);
 			return Constants.STR_CLASS;
 		} else {
 			classService.updateStudent(clazz, principal.getName());
