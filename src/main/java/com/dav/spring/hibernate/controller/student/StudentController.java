@@ -1,7 +1,6 @@
 package com.dav.spring.hibernate.controller.student;
 
 import java.security.Principal;
-import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -10,8 +9,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -22,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dav.spring.hibernate.common.util.Constants;
-import com.dav.spring.hibernate.config.TokenHandler;
 import com.dav.spring.hibernate.entity.Clazz;
 import com.dav.spring.hibernate.entity.Student;
 import com.dav.spring.hibernate.service.ClassService;
@@ -44,10 +40,6 @@ public class StudentController {
 	@Autowired
 	private ClassService classService;
 
-	/** The token handler. */
-	@Autowired
-	private TokenHandler tokenHandler;
-
 	/**
 	 * Index.
 	 *
@@ -61,15 +53,6 @@ public class StudentController {
 	@RequestMapping(value = { "", "/", "/index", "insert" }, method = RequestMethod.GET)
 	public String index(ModelMap model, Principal principal, HttpSession httpSession) throws Exception {
 		if (principal != null && principal.getName() != null && !principal.getName().equals("")) {
-			String role = "";
-			Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication()
-					.getAuthorities();
-			for (GrantedAuthority simpleGrantedAuthority : authorities) {
-				role += simpleGrantedAuthority.toString();
-			}
-			httpSession.setAttribute(Constants.STR_ROLE, role);
-			httpSession.setAttribute(Constants.STR_USERNAME, principal.getName());
-			httpSession.setAttribute(Constants.STR_JWT, tokenHandler.createTokenForUser(role));
 			Student student = new Student();
 			model.addAttribute(Constants.STR_STUDENT, student);
 		}
@@ -84,7 +67,7 @@ public class StudentController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasAnyRole('ADMIN', 'MOD', 'USER')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'MOD')")
 	@RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
 	public String edit(ModelMap model, @PathVariable("id") Integer id) throws Exception {
 		Student student = studentService.findById(id);
@@ -134,7 +117,6 @@ public class StudentController {
 	@RequestMapping(value = "/update")
 	public String update(@Valid Student student, BindingResult bindingResult,
 			Principal principal, ModelMap model) throws Exception {
-		//studentValidator.validate(student, bindingResult);
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(Constants.STR_STUDENT, student);
 			model.addAttribute(Constants.STR_MESSAGE, Constants.STR_UPDATE_UNSUCCESS);

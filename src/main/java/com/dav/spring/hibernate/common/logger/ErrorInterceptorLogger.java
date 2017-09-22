@@ -26,10 +26,10 @@ public class ErrorInterceptorLogger {
      */
     @AfterThrowing(pointcut = "execution(* com.dav.spring.hibernate.controller..*.*(..))", throwing = "throwEx")
     public void errorInterceptor(JoinPoint joinPoint, Throwable throwEx) {
-        logger.info("***** Start-Error: " + joinPoint.getSignature().getName() + " *****");
+        logger.info("*************** Start-Error: " + joinPoint.getSignature().getName() + " ***************");
         StringBuffer strEx = getContentException(throwEx);
         logger.error(strEx);
-        logger.info("***** End-Error: " + joinPoint.getSignature().getName() + " *****");
+        logger.info("*************** End-Error: " + joinPoint.getSignature().getName() + " ***************");
 
     }
 

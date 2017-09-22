@@ -37,7 +37,7 @@ public class MyLogger {
      */
     @AfterReturning("execution(* com.dav.spring.hibernate.controller..*.*(..))")
     public void logMethodAccessAfter(JoinPoint joinPoint) {
-    	logger.info("***** Completed: " + joinPoint.getSignature().getName() + " *****");
+    	logger.info("*************** Completed: " + joinPoint.getSignature().getName() + " ***************");
     }
 
     /**
@@ -47,7 +47,7 @@ public class MyLogger {
      */
     @Before("execution(* com.dav.spring.hibernate.controller..*.*(..))")
     public void logMethodAccessBefore(JoinPoint joinPoint) {
-    	logger.info("***** Starting: " + joinPoint.getSignature().getName() + " *****");
+    	logger.info("*************** Starting: " + joinPoint.getSignature().getName() + " ***************");
     }
 
     /**
@@ -68,13 +68,13 @@ public class MyLogger {
     	MethodSignature signature = (MethodSignature) pjp.getSignature();
         Method method = signature.getMethod();
 
-    	long start = System.currentTimeMillis();
-    	logger.info("Going to call the method. "+method.getName());
-        Object output = pjp.proceed();
-        logger.info("Method execution completed.");
-        long elapsedTime = System.currentTimeMillis() - start;
-        logger.info("Method execution time: " + elapsedTime + " milliseconds.");
-    	logger.info("End method. "+method.getName());
+		long start = System.currentTimeMillis();
+		logger.info("***** Going to call the method. " + method.getName() + " *****");
+		Object output = pjp.proceed();
+		logger.info("***** Method execution completed. *****");
+		long elapsedTime = System.currentTimeMillis() - start;
+		logger.info("***** Method execution time: " + elapsedTime + " milliseconds. *****");
+		logger.info("***** End method. " + method.getName() + " *****");
 
         return output;
     }

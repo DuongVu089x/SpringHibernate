@@ -26,14 +26,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    
+
+    @Autowired
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
+
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.web.builders.HttpSecurity)
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-		http.
-			httpBasic()
+		http
+			.httpBasic()
 			.and()
 			.authorizeRequests()
 			.antMatchers("/student/**")
@@ -44,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 			.formLogin()
 				.loginPage("/login")
-				.defaultSuccessUrl("/student/")
+				.successHandler(authenticationSuccessHandler)
 				.failureUrl("/login?error")
 				.usernameParameter("username")
 				.passwordParameter("password")

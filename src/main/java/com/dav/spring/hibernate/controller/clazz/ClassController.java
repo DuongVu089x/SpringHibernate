@@ -39,7 +39,7 @@ public class ClassController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasAnyRole('ADMIN', 'MOD', 'USER')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'MOD')")
 	@RequestMapping(value = { "", "/", "/index", "insert" }, method = RequestMethod.GET)
 	public String index(ModelMap model) throws Exception {
 		Clazz clazz = new Clazz();
@@ -80,7 +80,7 @@ public class ClassController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasAnyRole('ADMIN', 'MOD', 'USER')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'MOD')")
 	@RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
 	public String edit(ModelMap model, @PathVariable("id") Integer id) throws Exception {
 		Clazz clazz = classService.findById(id);

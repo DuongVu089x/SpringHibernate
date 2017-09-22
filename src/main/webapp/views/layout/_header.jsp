@@ -34,7 +34,9 @@
 					</div>
 					<ul class="nav navbar-nav">
 						<li class="active"><a href="/student/">Student</a></li>
-						<li><a href="/class/">Class</a></li>
+						<c:if test="${role != 'ROLE_USER' }">
+							<li><a href="/class/">Class</a></li>
+						</c:if>
 					</ul>
 				</c:if>
 				<c:if test="${!(empty sessionScope['role'])}">
