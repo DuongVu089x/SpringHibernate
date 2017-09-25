@@ -33,6 +33,20 @@ public class ErrorInterceptorLogger {
 
     }
 
+	/**
+	 * Error token parse.
+	 *
+	 * @param joinPoint the join point
+	 * @param throwEx the throw ex
+	 */
+	@AfterThrowing(pointcut = "execution(* com.dav.spring.hibernate.config..*.*(..))", throwing = "throwEx")
+	public void errorTokenParse(JoinPoint joinPoint, Throwable throwEx) {
+		logger.info("*************** Start Parse Token Error ***************");
+		StringBuffer strEx = getContentException(throwEx);
+		logger.error(strEx);
+		logger.info("*************** End Parse Token Error ***************");
+	}
+
     /**
      * Gets the content exception.
      *

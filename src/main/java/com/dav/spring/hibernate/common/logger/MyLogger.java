@@ -68,7 +68,7 @@ public class MyLogger {
     	MethodSignature signature = (MethodSignature) pjp.getSignature();
         Method method = signature.getMethod();
 
-		long start = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
 		logger.info("***** Going to call the method. " + method.getName() + " *****");
 		Object output = pjp.proceed();
 		logger.info("***** Method execution completed. *****");

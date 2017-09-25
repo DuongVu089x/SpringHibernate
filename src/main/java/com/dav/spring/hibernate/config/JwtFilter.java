@@ -53,14 +53,13 @@ public class JwtFilter extends GenericFilterBean {
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
 		final String authHeader = request.getHeader(Constants.STR_HEADER_AUTHORIZATION);
-		// String url = request.getRequestURI();
 
+		if (authHeader == null) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, Constants.STR_UNAUTHORIZED);
+			return;
+		}
 		try {
-			if (authHeader == null) {
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, Constants.STR_UNAUTHORIZED);
-				return;
-			}
 			String role = tokenHandler.parseUserFromToken(authHeader);
 			if (role.length() < 0) {
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -68,7 +67,7 @@ public class JwtFilter extends GenericFilterBean {
 				return;
 			}
 		} catch (Exception e) {
-			throw e;
+			e.printStackTrace();
 		}
 		chain.doFilter(req, res);
 	}
