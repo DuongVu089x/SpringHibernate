@@ -1,15 +1,39 @@
-$(document).ready(function() {
-	updateCss();
-});
+function clearErrorMessage() {
+	$("div.error").each(function(index) {
+		$(this).html("");
+	});
+}
 
-function updateCss() {
-	const height = $(document).height();
-	const heightHeader = $('.header').height();
-	const heightFooter = $('#myFooter').height();
-	if((height - heightHeader - heightFooter)>300){
-		$('.login-page').height(height - heightHeader - heightFooter);
-	}else{
-		$('.login-page').height(300);
+function confirmForChanges() {
+	clearErrorMessage();
+	if (!checkValidFormLogin(getObject())) {
+		return false;
 	}
+	return true;
 
+}
+
+function checkValidFormLogin(object) {
+	$('.error-message').each(function(index) {
+		$(this).empty();
+		$(this).addClass('alert-hide');
+	});
+	var flag = true;
+	if (object.username.trim().length < 2 || object.username.trim().length > 255) {
+		showMessage("username", "Uername must be between 2 to 255");
+		flag = false;
+	}
+	if (object.password.trim().length < 2 || object.password.trim().length > 255) {
+		showMessage("password", "Password must be between 2 to 255");
+		flag = false;
+	}
+	return flag;
+}
+
+function getObject() {
+	var object = {
+		username : $("#username").val(),
+		password : $("#password").val()
+	}
+	return object;
 }

@@ -82,6 +82,10 @@ function changeActiveNav() {
 		$(".nav.navbar-nav li:nth-child(2)").addClass("active")
 	}
 }
+function disableChange(event){
+	event.preventDefault();
+}
+
 $(document).mouseup(function(e) {
 	var container = $(".search-result.col-md-5.col-md-push-6");
 	if (!container.is(e.target) && container.has(e.target).length === 0) {

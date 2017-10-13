@@ -48,6 +48,8 @@ public class Constants {
 	/** The Constant STR_KEYWORD. */
 	public static final String STR_KEYWORD = "keyword";
 
+	public static final String STR_PAGE = "page";
+
 	/** The Constant STR_BLANK. */
 	public static final String STR_BLANK ="";
 
@@ -77,4 +79,7 @@ public class Constants {
 
 	/** The Constant STR_403_PAGE. */
 	public static final String STR_403_PAGE = "403";
+
+
+	public static final String STR_PAGE_CLASS = "pageClass";
 }

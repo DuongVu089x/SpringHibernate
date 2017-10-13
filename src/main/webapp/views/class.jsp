@@ -90,12 +90,12 @@
 					</form:form>
 				</div>
 				<div class="tab-pane" id="list">
-					<table id="data-class" class="table table-hover">
+					<table id="data-class" class="table table-hover page">
 						<thead>
 							<tr>
 								<th>ID</th>
 								<th>Name</th>
-								<c:if test="${sessionScope['role'] =='ROLE_ADMIN'}">
+								<c:if test="${sessionScope['role'] =='ADMIN'}">
 									<th>Action</th>
 								</c:if>
 							</tr>
@@ -104,12 +104,12 @@
 							<c:forEach var="clazz" items="${pageClass.getContent()}">
 								<tr>
 									<td class="text">${clazz.id}</td>
-									<td class="text">${clazz.name}</td>
+									<td class="text">${fn:escapeXml(clazz.name)}</td>
 									<td>
-										<c:if test="${sessionScope['role'] != 'ROLE_USER'}">
+										<c:if test="${sessionScope['role'] != 'USER'}">
 											<a class='btn btn-success' href="class/edit/${clazz.id}">Sửa</a>
 										</c:if>
-										<c:if test="${sessionScope['role'] == 'ROLE_ADMIN'}">
+										<c:if test="${sessionScope['role'] == 'ADMIN'}">
 											<a class='btn btn-danger' href="class/delete/${clazz.id}">Xóa</a>
 										</c:if>
 										
@@ -121,7 +121,15 @@
 					<ul class="pagination col-sm-4 col-sm-push-4">
 						<c:forEach begin="1" end="${pageClass.getTotalPages()}"
 							varStatus="loop">
-							<li><a href='/class/?page=${loop.index}&keyword=${keyword}'>${loop.index}</a></li>
+							<c:choose>
+								<c:when test="${sessionScope['page'] == loop.index}">
+									<li class="active"><a onclick="disableChange(event)" href='/class/?page=${loop.index}&keyword=${keyword}'>${loop.index}</a></li>
+								</c:when>
+								<c:otherwise>
+									<li><a href='/class/?page=${loop.index}&keyword=${keyword}'>${loop.index}</a></li>
+								</c:otherwise>
+							</c:choose>
+							
 						</c:forEach>
 					</ul>
 				</div>

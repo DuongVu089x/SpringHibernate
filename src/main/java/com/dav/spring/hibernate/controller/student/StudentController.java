@@ -49,12 +49,18 @@ public class StudentController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasAnyRole('ADMIN', 'MOD', 'USER')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MOD', 'USER')")
 	@RequestMapping(value = { "", "/", "/index", "insert" }, method = RequestMethod.GET)
-	public String index(ModelMap model, Principal principal, HttpSession httpSession) throws Exception {
+    public String index(ModelMap model, Principal principal, HttpSession httpSession,
+            @RequestParam(required = true, defaultValue = "", value = "keyword") String keyword,
+            @RequestParam(required = true, defaultValue = "1", value = "page") int page) throws Exception {
+	    httpSession.setAttribute("page", page);
+        httpSession.setAttribute("keyword", keyword);
 		if (principal != null && principal.getName() != null && !principal.getName().equals("")) {
 			Student student = new Student();
 			model.addAttribute(Constants.STR_STUDENT, student);
+			Page<Student> pageStudentCurrent = getPageStudent(model, httpSession,keyword, page);
+			model.addAttribute("pageStudent", pageStudentCurrent);
 		}
 		return Constants.STR_STUDENT;
 	}
@@ -67,11 +73,13 @@ public class StudentController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasAnyRole('ADMIN', 'MOD')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MOD')")
 	@RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
-	public String edit(ModelMap model, @PathVariable("id") Integer id) throws Exception {
+	public String edit(ModelMap model, @PathVariable("id") Integer id, HttpSession httpSession) throws Exception {
 		Student student = studentService.findById(id);
 		if(student != null){
+			Page<Student> pageStudentCurrent = getPageStudent(model, httpSession,(String) httpSession.getAttribute(Constants.STR_KEYWORD), (int) httpSession.getAttribute(Constants.STR_PAGE));
+			model.addAttribute("pageStudent", pageStudentCurrent);
 			model.addAttribute(Constants.STR_STUDENT, studentService.findById(id));
 			return Constants.STR_STUDENT;
 		}else{
@@ -89,17 +97,19 @@ public class StudentController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasAnyRole('ADMIN', 'MOD')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MOD')")
 	@RequestMapping(value = "/insert")
 	public String insert(@Valid Student student, BindingResult bindingResult,
-			Principal principal, ModelMap model) throws Exception {
+			Principal principal, ModelMap model, HttpSession httpSession) throws Exception {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(Constants.STR_STUDENT, student);
 			model.addAttribute(Constants.STR_MESSAGE, Constants.STR_INSERT_SUCCESS );
 			return Constants.STR_STUDENT;
 		} else {
 			studentService.insertStudent(student, principal.getName());
-			return "redirect:/student/";
+			int page = (int) httpSession.getAttribute("page");
+			String keyword = (String) httpSession.getAttribute("keyword");
+            return "redirect:/student/?page=" + page + "&keyword=" + keyword;
 		}
 	}
 
@@ -113,17 +123,19 @@ public class StudentController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasAnyRole('ADMIN', 'MOD')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MOD')")
 	@RequestMapping(value = "/update")
 	public String update(@Valid Student student, BindingResult bindingResult,
-			Principal principal, ModelMap model) throws Exception {
+			Principal principal, ModelMap model, HttpSession httpSession) throws Exception {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(Constants.STR_STUDENT, student);
 			model.addAttribute(Constants.STR_MESSAGE, Constants.STR_UPDATE_UNSUCCESS);
 			return Constants.STR_STUDENT;
 		} else {
 			studentService.updateStudent(student, principal.getName());
-			return "redirect:/student/";
+			int page = (int) httpSession.getAttribute(Constants.STR_PAGE);
+            String keyword = (String) httpSession.getAttribute(Constants.STR_KEYWORD);
+            return "redirect:/student/?page=" + page + "&keyword=" + keyword;
 		}
 	}
 
@@ -136,14 +148,16 @@ public class StudentController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ADMIN')")
 	@RequestMapping(value = "/delete/{id}")
-	public String delete(ModelMap model, @PathVariable("id") Integer id, Principal principal) throws Exception {
+	public String delete(ModelMap model, @PathVariable("id") Integer id, Principal principal, HttpSession httpSession) throws Exception {
 		Student student = studentService.findById(id);
 		if(student != null){
 			studentService.delete(id, principal.getName());
 		}
-		return "redirect:/student/";
+		int page = (int) httpSession.getAttribute("page");
+        String keyword = (String) httpSession.getAttribute("keyword");
+        return "redirect:/student/?page=" + page + "&keyword=" + keyword;
 	}
 
 	/**
@@ -155,13 +169,17 @@ public class StudentController {
 	 * @return the page student
 	 * @throws Exception the exception
 	 */
-	@ModelAttribute("pageStudent")
-	public Page<Student> getPageStudent(
-			@RequestParam(required = true, defaultValue = "", value = "keyword") String keyword,
-			@RequestParam(required = true, defaultValue = "1", value = "page") int page, ModelMap model) throws Exception {
-		model.addAttribute(Constants.STR_KEYWORD, keyword);
-		return studentService.getStudentByPageAndKeyword(page, keyword);
-	}
+	public Page<Student> getPageStudent(ModelMap model, HttpSession httpSession,
+            @RequestParam(required = true, defaultValue = "", value = "keyword") String keyword,
+            @RequestParam(required = true, defaultValue = "1", value = "page") int page) throws Exception {
+        model.addAttribute(Constants.STR_KEYWORD, keyword);
+        Page<Student> result = studentService.getStudentByPageAndKeyword(page, keyword);
+        if(result.getContent().isEmpty() && page >1){
+        	result = studentService.getStudentByPageAndKeyword(page-1, keyword);
+			httpSession.setAttribute(Constants.STR_PAGE, page - 1);
+        }
+        return result;
+    }
 
 	/**
 	 * Gets the all class.

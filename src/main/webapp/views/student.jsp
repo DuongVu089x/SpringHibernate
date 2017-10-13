@@ -7,6 +7,7 @@
 
 <jsp:include page="layout/_header.jsp" />
 
+<img id="loading" src="/views/images/loading.gif">
 <div class="student-content">
 	<div class="container">
 		<h2 class="text-center">QUẢN LÝ HỌC SINH</h2>
@@ -37,16 +38,15 @@
 		</div>
 		<!-- Nav tabs -->
 		<div class="row">
-				
 				<ul class="nav nav-tabs" role="tablist">
-					<c:if test="${role !='ROLE_USER' }">
+					<c:if test="${role !='USER' }">
 						<li class="active" id="tab-update"><a href="#edit" role="tab" data-toggle="tab">CẬP NHẬT</a></li>
 					</c:if>
 					<li id="tab-list"><a href="#list" role="tab" data-toggle="tab">DANH SÁCH</a></li>
 				</ul>
 				<!-- Tab panes -->
 				<div class="tab-content">
-					<c:if test="${role!= 'ROLE_USER'}">
+					<c:if test="${role!= 'USER'}">
 						<div class="tab-pane active" id="edit">
 							${message}
 							<form:form action="student/index" commandName="student" role="form" onsubmit="return confirmForChanges();">
@@ -107,7 +107,6 @@
 									<label>Lớp</label>
 									<form:checkboxes items="${allClasses}" path="classes" itemLabel="name" itemValue="id"/>
 								</div>				  
-								
 								<div class="form-group">
 									 <c:choose>
 							        	<c:when test="${student.id == null}">
@@ -123,7 +122,7 @@
 						</div>
 					</c:if>
 					<div class="tab-pane" id="list">
-						<table id="data-student" class="table table-hover">
+						<table id="data-student" class="table table-hover page">
 							<thead>
 								<tr>
 									<th>ID</th>
@@ -132,7 +131,7 @@
 									<th>Date of birth</th>
 									<th>Average Score</th>
 									<th>Address</th>
-									<c:if test="${sessionScope['role'] !='ROLE_USER'}">
+									<c:if test="${sessionScope['role'] !='USER'}">
 										<th>Action</th>
 									</c:if>
 								</tr>
@@ -141,14 +140,14 @@
 								<c:forEach var="student" items="${pageStudent.getContent()}">
 									<tr>
 										<td class="">${student.id}</td>
-										<td class="text">${student.name}</td>
+										<td class="text">${fn:escapeXml(student.name)}</td>
 										<td class="text">${student.code}</td>
 										<td class="text date">${student.dateOfBirth}</td>
 										<td class="text">${student.averageScore}</td>
-										<td class="text">${student.address}</td>
-										<td><c:if test="${sessionScope['role'] != 'ROLE_USER'}">
+										<td class="text">${fn:escapeXml(student.address)}</td>
+										<td><c:if test="${sessionScope['role'] != 'USER'}">
 												<a class='btn btn-success' href="student/edit/${student.id}">Sửa</a>
-												<c:if test="${sessionScope['role'] == 'ROLE_ADMIN' }">
+												<c:if test="${sessionScope['role'] == 'ADMIN' }">
 													<a class='btn btn-danger' href="student/delete/${student.id}">Xóa</a>
 												</c:if>
 											</c:if></td>
@@ -159,14 +158,22 @@
 						<ul class="pagination col-sm-4 col-sm-push-4">
 							<c:forEach begin="1" end="${pageStudent.getTotalPages()}"
 								varStatus="loop">
-								<li><a href='/student/?page=${loop.index}&keyword=${keyword}'>${loop.index}</a></li>
-							</c:forEach>
+							<c:choose>
+								<c:when test="${sessionScope['page'] == loop.index}">
+									<li class="active"><a onclick="disableChange(event)"
+										href='/student/?page=${loop.index}&keyword=${keyword}'>${loop.index}</a></li>
+								</c:when>
+								<c:otherwise>
+									<li><a
+										href='/student/?page=${loop.index}&keyword=${keyword}'>${loop.index}</a></li>
+								</c:otherwise>
+							</c:choose>
+						</c:forEach>
 						</ul>
 					</div>
 				</div>
 		</div>
 	</div>
 </div>
-
 
 <jsp:include page="layout/_footer.jsp" />

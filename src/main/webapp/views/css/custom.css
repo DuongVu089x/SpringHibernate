@@ -233,3 +233,38 @@ input#dateOfBirth {
 	background: white;
 	display: none;
 }
+
+.login-page {
+	height: 500px;
+}
+
+table#data-student-page.page {
+	height: 300px;
+}
+
+table#data-class-page.page {
+	height: 250px
+}
+
+img#loading {
+	position: absolute;
+	top: 165px;
+	right: 40%;
+	width: 300px;
+	height: 300px;
+	z-index: 9999;
+	display: none;
+}
+
+img#loading.active {
+	display: block;
+}
+
+.table {
+	width: 100%;
+	max-width: 100%;
+	margin-bottom: 20px;
+	max-height: 330px;
+	height: 330px;
+	min-height: 330px;
+}

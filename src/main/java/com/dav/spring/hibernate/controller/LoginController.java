@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.dav.spring.hibernate.common.util.Constants;
 
@@ -22,7 +23,7 @@ public class LoginController {
      *
      * @return the string
      */
-    @RequestMapping({"/login","/"})
+    @RequestMapping(value = {"/login","/"}, method = RequestMethod.GET)
     public String login(Principal principal, HttpSession httpSession) {
         if (principal != null && principal.getName() != null && !principal.getName().equals("")) {
             return "redirect:/student/";

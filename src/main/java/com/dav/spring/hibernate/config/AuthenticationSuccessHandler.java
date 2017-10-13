@@ -51,7 +51,7 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 		determineTargetUrl(authentication, request);
 
 		if (response.isCommitted()) {
-			logger.debug("Response has already been committed. Unable to redirect to " + Constants.STR_URL_DEFAULT);
+			logger.error("Response has already been committed. Unable to redirect to " + Constants.STR_URL_DEFAULT);
 			return;
 		}
 

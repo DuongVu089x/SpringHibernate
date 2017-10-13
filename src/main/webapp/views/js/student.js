@@ -91,35 +91,41 @@ function formatLengthJson(stringData){
 }
 
 function searchStudentAjax(){
+	clearTimeout($(this).data("timer"));
 	$("#search-result").html("");
 	var keyword = $("#search").val();
 	keyword = validInputSearch(keyword);
 	if(keyword === ""){
 		$(".search-result.col-md-5.col-md-push-6").removeClass("show");
+		$("img#loading").removeClass("active");	
 	}else{
-		$.ajax({
-			method : "GET",
-			headers : {
-				'Authorization' : token
-			},
-			url : "/api/student/getStudentByKeyword?keyword="+keyword,
-			success: function(result){
-				var strResult = '';
-				if(result.length > 0){
-					$.each(result, function(index,value){
-						strResult += "<tr>"
-										+"<td class='text'>"+formatLengthJson(escapeXml(value.name))+"</td>"
-										+"<td class='text'>"+formatLengthJson(escapeXml(value.code))+"</td>"
-										+"<td class='text'>"+formatLengthJson(escapeXml(value.address))+"</td>"
-									+"</tr>"
-					});
-				}else{
-					strResult = "<p class='text-center'>Không tìm thấy dữ liệu</p>"
+		$("img#loading").addClass("active");
+		$(this).data("timer", setTimeout(function () {
+			$.ajax({
+				method : "GET",
+				headers : {
+					'Authorization' : token
+				},
+				url : "/api/student/getStudentByKeyword?keyword="+keyword,
+				success: function(result){
+					var strResult = '';
+					if(result.length > 0){
+						$.each(result, function(index,value){
+							strResult += "<tr>"
+											+"<td class='text'>"+formatLengthJson(escapeXml(value.name))+"</td>"
+											+"<td class='text'>"+formatLengthJson(escapeXml(value.code))+"</td>"
+											+"<td class='text'>"+formatLengthJson(escapeXml(value.address))+"</td>"
+										+"</tr>"
+						});
+					}else{
+						strResult = "<p class='text-center'>Không tìm thấy dữ liệu</p>"
+					}
+					$("#search-result").html(strResult);
+					$(".search-result.col-md-5.col-md-push-6").addClass("show");
 				}
-				$("#search-result").html(strResult);
-				$(".search-result.col-md-5.col-md-push-6").addClass("show");
-			}
-		});
+			});
+			$("img#loading").removeClass("active");	
+		},1000));
 	}
 	
 }
@@ -153,6 +159,9 @@ function viewMoreResult(event){
 	searchStudent();
 }
 
+function disableChange(event){
+	event.preventDefault();
+}
 
 $(document).ready(function() {
 	changeTab();

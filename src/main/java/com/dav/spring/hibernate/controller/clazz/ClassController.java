@@ -2,6 +2,7 @@ package com.dav.spring.hibernate.controller.clazz;
 
 import java.security.Principal;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,16 @@ public class ClassController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasAnyRole('ADMIN', 'MOD')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MOD')")
 	@RequestMapping(value = { "", "/", "/index", "insert" }, method = RequestMethod.GET)
-	public String index(ModelMap model) throws Exception {
+	public String index(ModelMap model, HttpSession httpSession,
+			@RequestParam(required = true, defaultValue = "", value = "keyword") String keyword,
+			@RequestParam(required = true, defaultValue = "1", value = "page") int page) throws Exception {
+		httpSession.setAttribute("page", page);
+		httpSession.setAttribute("keyword", keyword);
 		Clazz clazz = new Clazz();
 		model.addAttribute(Constants.STR_CLAZZ, clazz);
+		model.addAttribute(Constants.STR_PAGE_CLASS, getAllClass(model, httpSession, keyword, page));
 		return Constants.STR_CLASS;
 	}
 
@@ -57,17 +63,19 @@ public class ClassController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasAnyRole('ADMIN', 'MOD')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MOD')")
 	@RequestMapping(value = "/insert")
-	public String insert(@Valid Clazz clazz, BindingResult bindingResult,
-			Principal principal, ModelMap model) throws Exception {
+	public String insert(@Valid Clazz clazz, BindingResult bindingResult, Principal principal, ModelMap model,
+			HttpSession httpSession) throws Exception {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(Constants.STR_CLAZZ, clazz);
 			model.addAttribute(Constants.STR_MESSAGE, Constants.STR_INSERT_SUCCESS);
 			return Constants.STR_CLASS;
 		} else {
 			classService.insertClass(clazz, principal.getName());
-			return "redirect:/class/";
+			int page = (int) httpSession.getAttribute("page");
+			String keyword = (String) httpSession.getAttribute("keyword");
+			return "redirect:/class/?page=" + page + "&keyword=" + keyword;
 		}
 	}
 
@@ -79,14 +87,16 @@ public class ClassController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasAnyRole('ADMIN', 'MOD')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MOD')")
 	@RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
-	public String edit(ModelMap model, @PathVariable("id") Integer id) throws Exception {
+	public String edit(ModelMap model, @PathVariable("id") Integer id, HttpSession httpSession) throws Exception {
 		Clazz clazz = classService.findById(id);
-		if(clazz != null){
+		if (clazz != null) {
+			Page<Clazz> pageClass= getAllClass(model, httpSession, (String) httpSession.getAttribute("keyword"), (int)httpSession.getAttribute("page"));
 			model.addAttribute(Constants.STR_CLAZZ, classService.findById(id));
+			model.addAttribute(Constants.STR_PAGE_CLASS, pageClass);
 			return Constants.STR_CLASS;
-		}else{
+		} else {
 			return "redirect:/class/";
 		}
 	}
@@ -101,17 +111,19 @@ public class ClassController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasAnyRole('ADMIN', 'MOD')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MOD')")
 	@RequestMapping(value = "/update")
-	public String update(@Valid Clazz clazz, BindingResult bindingResult,
-			Principal principal, ModelMap model) throws Exception {
+	public String update(@Valid Clazz clazz, BindingResult bindingResult, Principal principal, ModelMap model,
+			HttpSession httpSession) throws Exception {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(Constants.STR_CLAZZ, clazz);
 			model.addAttribute(Constants.STR_MESSAGE, Constants.STR_UPDATE_UNSUCCESS);
 			return Constants.STR_CLASS;
 		} else {
 			classService.updateStudent(clazz, principal.getName());
-			return "redirect:/class/";
+			int page = (int) httpSession.getAttribute("page");
+			String keyword = (String) httpSession.getAttribute("keyword");
+			return "redirect:/class/?page=" + page + "&keyword=" + keyword;
 		}
 	}
 
@@ -124,16 +136,18 @@ public class ClassController {
 	 * @return the string
 	 * @throws Exception the exception
 	 */
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@RequestMapping(value = "/delete/{id}")
-	public String delete(ModelMap model, @PathVariable("id") Integer id, Principal principal) throws Exception {
+	public String delete(ModelMap model, @PathVariable("id") Integer id, Principal principal, HttpSession httpSession)
+			throws Exception {
 		Clazz clazz = classService.findById(id);
 		if (clazz != null) {
 			classService.delete(id, principal.getName());
 		}
-		return "redirect:/class/";
+		int page = (int) httpSession.getAttribute("page");
+		String keyword = (String) httpSession.getAttribute("keyword");
+		return "redirect:/class/?page=" + page + "&keyword=" + keyword;
 	}
-
 
 	/**
 	 * Gets the all class.
@@ -144,11 +158,16 @@ public class ClassController {
 	 * @return the all class
 	 * @throws Exception the exception
 	 */
-	@ModelAttribute("pageClass")
-	public Page<Clazz> getAllClass(
+	public Page<Clazz> getAllClass(ModelMap model, HttpSession httpSession,
 			@RequestParam(required = true, defaultValue = "", value = "keyword") String keyword,
-			@RequestParam(required = true, defaultValue = "1", value = "page") int page, ModelMap model) throws Exception {
+			@RequestParam(required = true, defaultValue = "1", value = "page") int page)
+			throws Exception {
 		model.addAttribute(Constants.STR_KEYWORD, keyword);
-		return classService.getAllClass(page, keyword);
+		Page<Clazz> result = classService.getAllClass(page, keyword);
+		if(result.getContent().isEmpty() && page >1){
+			result = classService.getAllClass(page-1, keyword);
+			httpSession.setAttribute(Constants.STR_PAGE, page - 1);
+		}
+		return result;
 	}
 }
